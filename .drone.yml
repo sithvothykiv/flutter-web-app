@@ -1,0 +1,57 @@
+kind: pipeline
+name: development
+clone:
+  disable: true
+trigger:
+  branch:
+  - develop
+
+steps:
+  # 遠端部屬
+  - name: deploy-dev
+    image: appleboy/drone-ssh
+    settings:
+      username: ubuntu
+      host: 18.140.102.45
+      port: 22
+      key:
+        from_secret: user_passwd
+      command_timeout: 10m
+      script:
+        - cd /home/ubuntu/dnmp/www/infinity-dev
+        - git clean -fd
+        - git checkout .
+        - git checkout develop
+        - git pull
+        - flutter clean
+        - flutter build web    
+
+---
+kind: pipeline
+name: production
+clone:
+  disable: true
+trigger:
+  branch:
+  - master
+
+steps:
+  # 遠端部屬
+  - name: deploy-production
+    image: appleboy/drone-ssh
+    settings:
+      username: ubuntu
+      host: 18.140.102.45
+      port: 22
+      key:
+        from_secret: user_passwd
+      command_timeout: 10m 
+      script:
+        - cd /home/ubuntu/dnmp/www/infinity-website
+        - git clean -fd
+        - git checkout .
+        - git checkout master
+        - git pull
+        - flutter clean
+        - flutter build web
+        
